@@ -1,0 +1,96 @@
+#include<SoftwareSerial.h>                            //incluir libreria para utilizar los comandos del modulo bluetooth.
+SoftwareSerial myBT(9,8);                           //Pin de conexión RX-->pin 8, TX-->pin 9.
+
+#define ENB 6
+#define ENA 7
+int speedMotorA = 200;                       //Declarar variables para asignar velocidad del motor.  
+int speedMotorB = 200;
+
+int IN1 = 10;                //adelante iz
+int IN2 = 11;                //atras
+int IN3 = 12;                //atras
+int IN4 = 13;                //adelante de
+
+//int ENA = A1;
+//int ENB = A0;
+
+
+char dato = 0;
+int ledPrueba = 13;
+int speedMotor =50;
+void setup() {
+  Serial.begin(9600);                                 //Inicializar comunicación serial para ver y enviar los comandos AT(debe estar en 9600 baudios en el serial monitor)
+  Serial.println("Monitor serial preparado.");          //Mensaje para confirmar comunicación serie.
+  myBT.begin(9600);                                  //Inicializar velocidad de comunicación del modulo bluetooth. (Con modulo HC05 se maneja una comunicación de 38400 baudios, con HC06 se maneja una comunicación de 9600)
+  pinMode(ledPrueba,OUTPUT);                          //Declarar led de prueba como salida.
+  
+  pinMode(IN1,OUTPUT);
+  pinMode(IN2,OUTPUT);
+  pinMode(IN3,OUTPUT);
+  pinMode(IN4,OUTPUT);
+  pinMode(ENA,OUTPUT);
+  pinMode(ENB,OUTPUT);
+  
+  analogWrite(ENA, speedMotorA);              //Enviar valor con la velocidad de motor en pines analogicos 
+  analogWrite(ENB, speedMotorB);
+  delay(100);
+}
+
+void loop() {
+
+  if(myBT.available()){                               //Condición para verificar información en el monitor serial, si es verdadero almacena el caracter en la variable dato.
+    dato = myBT.read();                               //Alamcenar el caracter enviado en la variable dato.
+    delay(30);                                        //Tiempo para recepción de señal y almacenamiento de variable. 
+    Serial.print(dato);                          
+    if(dato =='a'){                                   //Condición para realizar una acción con el arduino.
+      adelante();
+    }
+    if(dato =='b'){
+      detener();
+    }
+    if(dato =='c'){
+      atras();
+    }
+    if(dato =='d'){
+      derecha();
+    }
+    if(dato =='e'){
+      izquierda();
+    }
+  }
+}
+ void adelante(){
+  digitalWrite(IN1,1);
+  digitalWrite(IN4,1);
+  digitalWrite(IN2,0);
+  digitalWrite(IN3,0);
+  delay(20);
+}
+void atras(){
+  digitalWrite(IN2,1);
+  digitalWrite(IN3,1);
+  digitalWrite(IN1,0);
+  digitalWrite(IN4,0);
+  delay(20);
+}
+void derecha(){
+  digitalWrite(IN1,1);
+  digitalWrite(IN3,1);
+  digitalWrite(IN2,0);
+  digitalWrite(IN4,0);
+  delay(20);
+}
+void izquierda(){
+  digitalWrite(IN4,1);
+  digitalWrite(IN2,1);
+  digitalWrite(IN1,0);
+  digitalWrite(IN3,0);
+  delay(20);
+}
+void detener(){
+  digitalWrite(IN1,0);
+  digitalWrite(IN2,0);
+  digitalWrite(IN3,0);
+  digitalWrite(IN4,0);
+  delay(20);
+}
